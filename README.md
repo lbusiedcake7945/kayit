@@ -1,4 +1,412 @@
-# 5live.xyz
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt ve Giriş Sistemi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-deneme
-- aaa
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: transform 0.5s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.2);
+            outline: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .switch-form {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .switch-form a {
+            color: #6a11cb;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .switch-form a:hover {
+            text-decoration: underline;
+        }
+
+        .success-container {
+            display: none;
+            text-align: center;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 0.4; }
+            100% { transform: scale(0.8); opacity: 0.8; }
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: bounce 1s;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        .success-title {
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .user-info p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #00b09b;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Kayıt Formu -->
+        <div id="registerForm" class="form-container">
+            <h2>Hesap Oluştur</h2>
+            <form id="register">
+                <div class="form-group">
+                    <label for="regUsername">Kullanıcı Adı</label>
+                    <input type="text" id="regUsername" required>
+                    <div class="error-message" id="regUsernameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">E-posta</label>
+                    <input type="email" id="regEmail" required>
+                    <div class="error-message" id="regEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Şifre</label>
+                    <input type="password" id="regPassword" required>
+                    <div class="error-message" id="regPasswordError"></div>
+                </div>
+                <button type="submit" class="btn">Kayıt Ol</button>
+            </form>
+            <div class="switch-form">
+                Zaten hesabınız var mı? <a id="showLogin">Giriş Yap</a>
+            </div>
+        </div>
+
+        <!-- Giriş Formu -->
+        <div id="loginForm" class="form-container" style="display: none;">
+            <h2>Giriş Yap</h2>
+            <form id="login">
+                <div class="form-group">
+                    <label for="loginUsername">Kullanıcı Adı</label>
+                    <input type="text" id="loginUsername" required>
+                    <div class="error-message" id="loginUsernameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Şifre</label>
+                    <input type="password" id="loginPassword" required>
+                    <div class="error-message" id="loginPasswordError"></div>
+                </div>
+                <button type="submit" class="btn">Giriş Yap</button>
+            </form>
+            <div class="switch-form">
+                Hesabınız yok mu? <a id="showRegister">Kayıt Ol</a>
+            </div>
+        </div>
+
+        <!-- Başarılı Kayıt/Giriş Ekranı -->
+        <div id="successContainer" class="success-container">
+            <div class="success-icon">✓</div>
+            <h2 class="success-title">İşlem Başarılı!</h2>
+            <div class="user-info" id="userInfo">
+                <!-- Kullanıcı bilgileri buraya gelecek -->
+            </div>
+            <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elementleri
+        const registerForm = document.getElementById('registerForm');
+        const loginForm = document.getElementById('loginForm');
+        const successContainer = document.getElementById('successContainer');
+        const showLogin = document.getElementById('showLogin');
+        const showRegister = document.getElementById('showRegister');
+        const registerBtn = document.getElementById('register');
+        const loginBtn = document.getElementById('login');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userInfo = document.getElementById('userInfo');
+
+        // Formları göster/gizle
+        showLogin.addEventListener('click', () => {
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+
+        showRegister.addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+        });
+
+        // Kayıt işlemi
+        registerBtn.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            // Hata mesajlarını temizle
+            clearErrors();
+            
+            // Basit doğrulama
+            let isValid = true;
+            
+            if (username.length < 3) {
+                showError('regUsernameError', 'Kullanıcı adı en az 3 karakter olmalıdır');
+                isValid = false;
+            }
+            
+            if (!isValidEmail(email)) {
+                showError('regEmailError', 'Geçerli bir e-posta adresi giriniz');
+                isValid = false;
+            }
+            
+            if (password.length < 6) {
+                showError('regPasswordError', 'Şifre en az 6 karakter olmalıdır');
+                isValid = false;
+            }
+            
+            // Kullanıcı adı kontrolü
+            if (localStorage.getItem(username)) {
+                showError('regUsernameError', 'Bu kullanıcı adı zaten kullanılıyor');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Kullanıcıyı kaydet
+                const user = {
+                    username: username,
+                    email: email,
+                    password: password
+                };
+                
+                localStorage.setItem(username, JSON.stringify(user));
+                
+                // Başarılı ekranını göster
+                showSuccessScreen(user);
+            }
+        });
+
+        // Giriş işlemi
+        loginBtn.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Hata mesajlarını temizle
+            clearErrors();
+            
+            // Kullanıcıyı kontrol et
+            const userData = localStorage.getItem(username);
+            
+            if (!userData) {
+                showError('loginUsernameError', 'Kullanıcı adı bulunamadı');
+                return;
+            }
+            
+            const user = JSON.parse(userData);
+            
+            if (user.password !== password) {
+                showError('loginPasswordError', 'Şifre hatalı');
+                return;
+            }
+            
+            // Başarılı ekranını göster
+            showSuccessScreen(user);
+        });
+
+        // Çıkış işlemi
+        logoutBtn.addEventListener('click', () => {
+            successContainer.style.display = 'none';
+            loginForm.style.display = 'block';
+            
+            // Formları temizle
+            document.getElementById('login').reset();
+            document.getElementById('register').reset();
+        });
+
+        // Yardımcı fonksiyonlar
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function clearErrors() {
+            const errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(element => {
+                element.style.display = 'none';
+            });
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function showSuccessScreen(user) {
+            // Tüm formları gizle
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'none';
+            
+            // Kullanıcı bilgilerini göster
+            userInfo.innerHTML = `
+                <p><strong>Kullanıcı Adı:</strong> ${user.username}</p>
+                <p><strong>E-posta:</strong> ${user.email}</p>
+                <p><strong>Kayıt Tarihi:</strong> ${new Date().toLocaleDateString('tr-TR')}</p>
+            `;
+            
+            // Başarılı ekranını göster
+            successContainer.style.display = 'block';
+        }
+
+        // Sayfa yüklendiğinde otomatik giriş kontrolü
+        window.addEventListener('DOMContentLoaded', () => {
+            // Burada normalde bir oturum kontrolü yapılır
+            // Örnek olması açısından her zaman giriş formunu gösteriyoruz
+            loginForm.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
